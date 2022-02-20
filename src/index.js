@@ -56,11 +56,41 @@ Quiz.prototype.isEnded = function() {
     return this.questions.length === this.questionIndex
 }
 
-function loadQuestions() {
-
+function showScore() {
+    document.querySelector('#quiz').innerHTML = `<h1>Result</h1>
+        <div id="score">You scored ${quiz.score} / ${quiz.questions.length}</div>`;
 }
 
-// create questions here
+function loadQuestion() {
+
+    if (quiz.isEnded()) {
+        showScore();
+        return;
+    }
+
+    var currentQuestion = quiz.questions[quiz.questionIndex];
+    document.querySelector('#question').textContent = currentQuestion.text;
+
+    for (var i = 0; i < currentQuestion.choices.length; i++) {
+        document.getElementById('choice' + i).textContent = currentQuestion.choices[i];
+        handleOptionButtonClick('btn' + i, currentQuestion.choices[i]);
+    }
+    showProgress();
+}
+
+function handleOptionButtonClick(btnId, choice) {
+    var button = document.querySelector('#' + btnId);
+    button.onclick = function() {
+        quiz.checkOptionWithAnswer(choice);
+        loadQuestion();
+    };
+}
+
+function showProgress() {
+    document.querySelector('#progress').textContent = 'Question ' + (quiz.questionIndex + 1) + ' of ' + quiz.questions.length;
+}
+
+
 var questions = [
     new Question("JavaScript supports", ["Functions", "XHTML", "CSS", "HTML"], "Functions"),
     new Question("Which language is used for styling web pages?", ["HTML", "JQuery", "CSS", "XML"], "CSS"),
@@ -69,11 +99,14 @@ var questions = [
     new Question("JavaScript is a ", ["Language", "Programming Language", "Development", "All"], "Programming Language")
 ];
 
-var quiz = new Quiz(questions);
-quiz.checkOptionWithAnswer("Functions");
-quiz.checkOptionWithAnswer("CSS");
-quiz.checkOptionWithAnswer("Django");
-quiz.checkOptionWithAnswer("PHP");
-quiz.checkOptionWithAnswer("Programming Language");
+// var quiz = new Quiz(questions);
+// quiz.checkOptionWithAnswer("Functions");
+// quiz.checkOptionWithAnswer("CSS");
+// quiz.checkOptionWithAnswer("Django");
+// quiz.checkOptionWithAnswer("PHP");
+// quiz.checkOptionWithAnswer("Programming Language");
 
-console.log(quiz.score);
+// console.log(quiz.score);
+
+var quiz = new Quiz(questions);
+loadQuestion();
